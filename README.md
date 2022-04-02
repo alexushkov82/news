@@ -1,0 +1,3 @@
+#news
+
+Simple news application
