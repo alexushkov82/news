@@ -1,8 +1,8 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:news/main.dart';
+import 'dart:io';
+import 'package:webview_flutter/webview_flutter.dart';
+import 'package:xml/xml.dart' as xml;
 import 'data.dart';
-import 'package:http/http.dart' as http;
 import 'dart:developer' as devtools show log;
 
 class HomePage extends StatefulWidget {
@@ -14,14 +14,23 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
 
-  PageController _controller = PageController(
+  final PageController _controller = PageController(
     initialPage: 0,
   );
 
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
+  Future<List<Item>> getContactsFromXML(BuildContext context) async {
+    String xmlString = await DefaultAssetBundle.of(context).loadString('');
+    var raw = xml.parse(xmlString);
+    var elements = raw.findAllElements('item');
+    return elements.map((element){
+      return Item(
+        element.findElements('title').first.text,
+        element.findElements('link').first.text,
+        element.findElements('description').first.text,
+        element.findElements('date').first.text,
+        element.findElements('guid').first.text,
+      );
+    }).toList();
   }
 
   @override
@@ -30,29 +39,43 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: const Text('News'),
       ),
-      body: PageView(
-        controller: _controller,
-        children: [
-          Page1(),
-          Page2(),
-          Page3(),
-        ],
+      body: PageView.builder(
+        physics: BouncingScrollPhysics(),
+        itemCount: Item.samples.length,
+        itemBuilder: (BuildContext context, int index) {
+          return GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) {
+                    return WebView(
+                      initialUrl: Item.samples[index].link,
+                    );
+                  },
+                ),
+              );
+            },
+            child: itemCard(Item.samples[index]),
+          );
+        },
       ),
     );
   }
 
-  Widget Page1() {
+  Widget itemCard(Item item) {
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
       ),
+
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: <Widget>[
             Text(
-              'One',
+              item.title,
               style: TextStyle(
                 fontSize: 25,
                 fontWeight: FontWeight.w500,
@@ -62,8 +85,7 @@ class _HomePageState extends State<HomePage> {
               height: 15,
             ),
             Text(
-              'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed'
-                  ' do eiusmod tempor incididunt ut labore et dolore magna aliqua. ',
+              item.description,
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w400,
@@ -74,76 +96,6 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
-
-  Widget Page2() {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: <Widget>[
-            Text(
-              'Two',
-              style: TextStyle(
-                fontSize: 25,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            const SizedBox(
-              height: 15,
-            ),
-            Text(
-              'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed'
-                  ' do eiusmod tempor incididunt ut labore et dolore magna aliqua. ',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget Page3() {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: <Widget>[
-            Text(
-              'Three',
-              style: TextStyle(
-                fontSize: 25,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            const SizedBox(
-              height: 15,
-            ),
-            Text(
-              'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed'
-                  ' do eiusmod tempor incididunt ut labore et dolore magna aliqua. ',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-
 
 
 }
