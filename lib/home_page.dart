@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'data.dart';
 import 'package:http/http.dart' as http;
@@ -29,7 +30,12 @@ class _HomePageState extends State<HomePage> {
                   context,
                   MaterialPageRoute(
                     builder: (context) {
-                      return Container();
+                      return Scaffold(
+                        appBar: AppBar(
+                          title: Text(Item.samples[index].name),
+                        ),
+                        body: Container(),
+                      );
                     }
                   )
                 );
