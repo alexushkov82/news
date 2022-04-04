@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart' as xml;
+import 'package:xml/xml_events.dart';
 import 'data.dart';
 import 'dart:io';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -21,6 +22,21 @@ class _HomePageState extends State<HomePage> {
 
 
   Future<List<Item>> getItemsFromXML(BuildContext context) async {
+    // final url = Uri.parse('https://alfabank.ru/_/rss/_rss.html?subtype=1&category=2&city=21');
+    // final request = await HttpClient().getUrl(url);
+    // final HttpClientResponse response = await request.close();
+    // final stringData = await response.transform(utf8.decoder).join();
+    // print(stringData);
+    // await response
+    //     .transform(utf8.decoder)
+        // .toXmlEvents()
+        // .normalizeEvents()
+        // .forEachEvent(onText: (event) => print(event.text));
+
+    // return [];
+
+
+
     String xmlString = await DefaultAssetBundle.of(context).loadString('assets/data/data.xml');
     var raw = xml.parse(xmlString);
     var elements = raw.findAllElements('item');
@@ -44,10 +60,8 @@ class _HomePageState extends State<HomePage> {
       body: FutureBuilder(
         future: getItemsFromXML(context),
         builder: (context, data) {
-          devtools.log(data.toString());
           if (data.hasData) {
             List<Item> items = data.data as List<Item>;
-            devtools.log(items.toString());
             return PageView.builder(
               physics: BouncingScrollPhysics(),
               itemCount: items.length,
@@ -58,8 +72,13 @@ class _HomePageState extends State<HomePage> {
                       context,
                       MaterialPageRoute(
                         builder: (context) {
-                          return WebView(
-                            initialUrl: items[index].link,
+                          return Scaffold(
+                            appBar: AppBar(
+                              title: const Text("Link"),
+                            ),
+                            body: WebView(
+                              initialUrl: items[index].link,
+                            ),
                           );
                           },
                       ),
