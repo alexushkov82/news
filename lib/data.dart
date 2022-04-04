@@ -1,48 +1,45 @@
-class Timetable {
+class Item {
   String name;
-  String time;
-  String teacher;
-  String clas;
-  String image;
+  String info;
 
-  Timetable(
+  Item(
       this.name,
-      this.time,
-      this.teacher,
-      this.clas,
-      this.image,
+      this.info,
       );
 
-  static List<Timetable> samples = [
-    Timetable(
-      'Mathematical Analysis',
-      '8.15-9.35',
-      'Mazanik',
-      '605',
-      'assets/2.jpg',
+  static List<Item> samples = [
+    Item(
+      'One',
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed'
+          ' do eiusmod tempor incididunt ut labore et dolore magna aliqua. ',
+    ),
+    Item(
+      'Two',
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed'
+          ' do eiusmod tempor incididunt ut labore et dolore magna aliqua. ',
+    ),
+    Item(
+      'Three',
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed'
+          ' do eiusmod tempor incididunt ut labore et dolore magna aliqua. ',
+    ),
+    Item(
+      'Four',
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed'
+          ' do eiusmod tempor incididunt ut labore et dolore magna aliqua. ',
+    ),
+    Item(
+      'Five',
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed'
+          ' do eiusmod tempor incididunt ut labore et dolore magna aliqua. ',
+    ),
+    Item(
+      'Six',
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed'
+          ' do eiusmod tempor incididunt ut labore et dolore magna aliqua. ',
+    ),
 
-    ),
-    Timetable(
-      'Differential Equations',
-      '9.45-11.05',
-      'Zadvorny',
-      '517',
-      'assets/3.jpg',
-    ),
-    Timetable(
-      'Programming',
-      '11.15-12.35',
-      'Vasilenko',
-      '508',
-      'assets/4.jpg',
-    ),
-    Timetable(
-      'Swimming',
-      '3.30-5.00',
-      'Hojempo',
-      'Swimming pool',
-      'assets/5.jpg',
-    ),
 
   ];
+
 }
