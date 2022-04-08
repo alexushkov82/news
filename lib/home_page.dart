@@ -8,6 +8,7 @@ import 'data.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'dart:developer' as devtools show log;
 import 'dart:async';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 
 class HomePage extends StatefulWidget {
@@ -18,6 +19,10 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+
+  var unescape = HtmlUnescape();
+
+  final RefreshController _refreshController = RefreshController(initialRefresh: false);
 
   final PageController _controller = PageController(
     initialPage: 0,
@@ -67,6 +72,12 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
+  void _onRefresh() async{
+    setState(() {
+    });
+    _refreshController.refreshCompleted();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -79,62 +90,58 @@ class _HomePageState extends State<HomePage> {
           if (data.hasData) {
             List<Item> items = data.data as List<Item>;
             FlutterNativeSplash.remove();
-            return PageView.builder(
+            return SmartRefresher(
               physics: BouncingScrollPhysics(),
-              itemCount: items.length,
-              itemBuilder: (BuildContext context, int index) {
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) {
-                          return Scaffold(
-                            appBar: AppBar(
-                              title: const Text("Link"),
-                            ),
-                            body: WebView(
-                              initialUrl: items[index].link,
-                            ),
-                          );
-                        },
-                      ),
-                    );
-                  },
-                  child: itemCard(items[index]),
-                );
-              },
+              onRefresh: _onRefresh,
+              controller: _refreshController,
+              child: ListView.builder(
+                //physics: BouncingScrollPhysics(),
+                itemCount: items.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return  Scaffold(
+                              appBar: AppBar(
+                                title: const Text("News"),
+                              ),
+                              body: itemNews(items[index]),
+                            );
+                          },
+                        ),
+                      );
+                    },
+                    child: itemCard(items[index]),
+                  );
+                }
+              ),
             );
           } else {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           }
         },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          setState(() {});
-        },
-        child: const Icon(Icons.refresh),
       ),
     );
   }
 
   Widget itemCard(Item item) {
-    var unescape = HtmlUnescape();
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: SingleChildScrollView(
-          physics: BouncingScrollPhysics(),
+    return SizedBox(
+      height: 300,
+      child: Card(
+        elevation: 2,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(15),
           child: Column(
             children: <Widget>[
               Text(
                 item.title,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 25,
                   fontWeight: FontWeight.w500,
                 ),
@@ -142,11 +149,14 @@ class _HomePageState extends State<HomePage> {
               const SizedBox(
                 height: 15,
               ),
-              Text(
-                unescape.convert(item.description),
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w400,
+              Expanded(
+                child: Text(
+                  unescape.convert(item.description),
+                  overflow: TextOverflow.fade,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w400,
+                  ),
                 ),
               ),
             ],
@@ -155,6 +165,47 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
+  
+  Widget itemNews(Item item) {
+    return PageView(
+      children: [
+        SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(15),
+            child: SingleChildScrollView(
+              physics: BouncingScrollPhysics(),
+              child: Column(
+                children: <Widget>[
+                  Text(
+                    item.title,
+                    style: const TextStyle(
+                      fontSize: 25,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 15,
+                  ),
+                  Text(
+                    unescape.convert(item.description),
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        WebView(
+          initialUrl: item.link,
+        )
+      ],
+    );
+  }
 
+
+  
 
 }
