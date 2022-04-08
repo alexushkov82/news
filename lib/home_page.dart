@@ -1,13 +1,10 @@
-import 'dart:convert';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:xml/xml.dart' as xml;
 import 'package:http/http.dart' as http;
-import 'package:xml/xml_events.dart';
-import 'package:xml2json/xml2json.dart';
+import 'package:windows1251/windows1251.dart';
+import 'package:html_unescape/html_unescape.dart';
 import 'data.dart';
-import 'dart:io';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'dart:developer' as devtools show log;
 import 'dart:async';
@@ -32,8 +29,7 @@ class _HomePageState extends State<HomePage> {
       Map<String, String> headers = {"Content-Type": "text/html,application/xml; charset=utf-8"};
       final response = await http.get(url, headers: headers);
       if (response.statusCode == 200) {
-        print(response.bodyBytes);
-        final document = xml.XmlDocument.parse(utf8.decode(response.bodyBytes, allowMalformed: true));
+        final document = xml.XmlDocument.parse(windows1251.decode(response.bodyBytes));
         var xmlParsedFile = document
             .findAllElements('item')
             .map<Item>((e) => Item.fromElement(e))
@@ -43,11 +39,9 @@ class _HomePageState extends State<HomePage> {
         return throw Exception('Failed to load');
       }
     } catch(e) {
-      print(e);
+      devtools.log(e.toString());
       return [];
     }
-
-
     /*
     String file = await DefaultAssetBundle.of(context).loadString('assets/data/data.xml');
     var document = xml.XmlDocument.parse(file);
@@ -126,12 +120,12 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget itemCard(Item item) {
+    var unescape = HtmlUnescape();
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
       ),
-
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: SingleChildScrollView(
@@ -149,7 +143,7 @@ class _HomePageState extends State<HomePage> {
                 height: 15,
               ),
               Text(
-                item.description[0],
+                unescape.convert(item.description),
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w400,

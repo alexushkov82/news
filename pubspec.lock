@@ -98,7 +98,7 @@ packages:
     source: hosted
     version: "1.0.4"
   flutter_native_splash:
-    dependency: "direct main"
+    dependency: "direct dev"
     description:
       name: flutter_native_splash
       url: "https://pub.dartlang.org"
@@ -301,6 +301,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.7.1"
+  windows1251:
+    dependency: "direct main"
+    description:
+      name: windows1251
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.3"
   xml:
     dependency: "direct main"
     description:

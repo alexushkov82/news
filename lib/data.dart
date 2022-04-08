@@ -1,12 +1,11 @@
-import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
-import 'package:html_unescape/html_unescape.dart';
 import 'package:xml/xml.dart' as xml;
 
 class Item {
   String title;
   String link;
-  List<String> description;
+  String description;
   String date;
   String guid;
 
@@ -24,31 +23,17 @@ class Item {
   }
 
   factory Item.fromElement(XmlElement element) {
-    List<String> description = [element.findElements('description').single.text];
+    String tmp = element.findElements('description').single.text;
     return Item(
-      title: /*unhtml.convert(element
-          .findElements('title')
-          .single
-          .text),*/
-      element
-          .findElements('title')
-          .single
-          .text,
-      link: element
-        .findElements('link')
-        .single
-        .text,
-      description: description,
-      date: element
-          .findElements('pubDate')
-          .single
-          .text,
-      guid: element
-          .findElements('guid')
-          .single
-          .text,
+      title: element.findElements('title').single.text,
+      link: element.findElements('link').single.text,
+      description: tmp.replaceAll(RegExp(r'<p>|</p>|<img.*/>|<br/>|<a.*/a>|<b>|</b>'), ''),
+      date: element.findElements('pubDate').single.text,
+      guid: element.findElements('guid').single.text,
     );
 
   }
+
+
 
 }
